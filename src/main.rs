@@ -1,4 +1,4 @@
-use flscolors::Colors;
+use flscolors::bsd::Colors;
 
 fn main() {
     let colors = Colors::default().to_string();
