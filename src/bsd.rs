@@ -1,3 +1,6 @@
+// Reference to `ls`and `LSCOLORS`
+// https://man.freebsd.org/cgi/man.cgi?query=ls&apropos=0&sektion=1&manpath=FreeBSD+15.0-CURRENT&arch=default&format=html
+
 use nom::{
     branch::alt, bytes::complete::tag, combinator::map, multi::many_m_n, sequence::tuple, IResult,
 };
