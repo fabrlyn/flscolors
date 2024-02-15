@@ -18,53 +18,47 @@ impl Colors {
     }
 }
 
+impl Type {
+    const fn default_colors(&self) -> ColorPair {
+        match self {
+            Type::BlockSpecial => ColorPair(Color::Blue, Color::Cyan),
+            Type::CharacterSpecial => ColorPair(Color::Blue, Color::Brown),
+            Type::Directory => ColorPair(Color::Blue, Color::Default),
+            Type::DirectoryWithSticky => ColorPair(Color::Black, Color::Green),
+            Type::DirectoryWithoutSticky => ColorPair(Color::Black, Color::Brown),
+            Type::Executable => ColorPair(Color::Red, Color::Default),
+            Type::ExecutableSetGid => ColorPair(Color::Black, Color::Cyan),
+            Type::ExecutableSetUid => ColorPair(Color::Black, Color::Red),
+            Type::Pipe => ColorPair(Color::Brown, Color::Default),
+            Type::Socket => ColorPair(Color::Green, Color::Default),
+            Type::SymbolicLink => ColorPair(Color::Magenta, Color::Default),
+        }
+    }
+}
+
+impl Attribute {
+    fn default_from_type(r#type: Type) -> Attribute {
+        Attribute {
+            colors: r#type.default_colors(),
+            r#type,
+        }
+    }
+}
+
 impl Default for Colors {
     fn default() -> Self {
         Self([
-            Attribute {
-                colors: ColorPair(Color::Blue, Color::Default),
-                r#type: Type::Directory,
-            },
-            Attribute {
-                colors: ColorPair(Color::Magenta, Color::Default),
-                r#type: Type::SymbolicLink,
-            },
-            Attribute {
-                colors: ColorPair(Color::Green, Color::Default),
-                r#type: Type::Socket,
-            },
-            Attribute {
-                colors: ColorPair(Color::Brown, Color::Default),
-                r#type: Type::Pipe,
-            },
-            Attribute {
-                colors: ColorPair(Color::Red, Color::Default),
-                r#type: Type::Executable,
-            },
-            Attribute {
-                colors: ColorPair(Color::Blue, Color::Cyan),
-                r#type: Type::BlockSpecial,
-            },
-            Attribute {
-                colors: ColorPair(Color::Blue, Color::Brown),
-                r#type: Type::CharacterSpecial,
-            },
-            Attribute {
-                colors: ColorPair(Color::Black, Color::Red),
-                r#type: Type::ExecutableSetUid,
-            },
-            Attribute {
-                colors: ColorPair(Color::Black, Color::Cyan),
-                r#type: Type::ExecutableSetGid,
-            },
-            Attribute {
-                colors: ColorPair(Color::Black, Color::Green),
-                r#type: Type::DirectoryWithSticky,
-            },
-            Attribute {
-                colors: ColorPair(Color::Black, Color::Brown),
-                r#type: Type::DirectoryWithoutSticky,
-            },
+            Attribute::default_from_type(Type::Directory),
+            Attribute::default_from_type(Type::SymbolicLink),
+            Attribute::default_from_type(Type::Socket),
+            Attribute::default_from_type(Type::Pipe),
+            Attribute::default_from_type(Type::Executable),
+            Attribute::default_from_type(Type::BlockSpecial),
+            Attribute::default_from_type(Type::CharacterSpecial),
+            Attribute::default_from_type(Type::ExecutableSetUid),
+            Attribute::default_from_type(Type::ExecutableSetGid),
+            Attribute::default_from_type(Type::DirectoryWithSticky),
+            Attribute::default_from_type(Type::DirectoryWithoutSticky),
         ])
     }
 }
@@ -218,4 +212,18 @@ impl Type {
             _ => None,
         }
     }
+}
+
+pub struct Builder {
+    directory: ColorPair,
+    symbolic_link: ColorPair,
+    socket: ColorPair,
+    pipe: ColorPair,
+    executable: ColorPair,
+    block_special: ColorPair,
+    character_special: ColorPair,
+    executable_set_uid: ColorPair,
+    executable_set_gid: ColorPair,
+    directory_with_sticky: ColorPair,
+    directory_without_sticky: ColorPair,
 }
