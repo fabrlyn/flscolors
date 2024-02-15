@@ -1,5 +1,6 @@
 // Reference to `ls`and `LSCOLORS`
 // https://man.freebsd.org/cgi/man.cgi?query=ls&apropos=0&sektion=1&manpath=FreeBSD+15.0-CURRENT&arch=default&format=html
+// Look at making some fns const if possible
 
 use nom::{
     branch::alt, bytes::complete::tag, combinator::map, multi::many_m_n, sequence::tuple, IResult,
@@ -12,26 +13,26 @@ impl Colors {
     pub fn to_string(&self) -> String {
         self.0
             .iter()
-            .flat_map(|c| [c.colors.0, c.colors.1])
+            .flat_map(|c| [c.colors.foreground, c.colors.background])
             .map(|c| c.code())
             .collect()
     }
 }
 
 impl Type {
-    const fn default_colors(&self) -> ColorPair {
+    fn default_colors(&self) -> ColorPair {
         match self {
-            Type::BlockSpecial => ColorPair(Color::Blue, Color::Cyan),
-            Type::CharacterSpecial => ColorPair(Color::Blue, Color::Brown),
-            Type::Directory => ColorPair(Color::Blue, Color::Default),
-            Type::DirectoryWithSticky => ColorPair(Color::Black, Color::Green),
-            Type::DirectoryWithoutSticky => ColorPair(Color::Black, Color::Brown),
-            Type::Executable => ColorPair(Color::Red, Color::Default),
-            Type::ExecutableSetGid => ColorPair(Color::Black, Color::Cyan),
-            Type::ExecutableSetUid => ColorPair(Color::Black, Color::Red),
-            Type::Pipe => ColorPair(Color::Brown, Color::Default),
-            Type::Socket => ColorPair(Color::Green, Color::Default),
-            Type::SymbolicLink => ColorPair(Color::Magenta, Color::Default),
+            Type::BlockSpecial => (Color::Blue, Color::Cyan).into(),
+            Type::CharacterSpecial => (Color::Blue, Color::Brown).into(),
+            Type::Directory => (Color::Blue, Color::Default).into(),
+            Type::DirectoryWithSticky => (Color::Black, Color::Green).into(),
+            Type::DirectoryWithoutSticky => (Color::Black, Color::Brown).into(),
+            Type::Executable => (Color::Red, Color::Default).into(),
+            Type::ExecutableSetGid => (Color::Black, Color::Cyan).into(),
+            Type::ExecutableSetUid => (Color::Black, Color::Red).into(),
+            Type::Pipe => (Color::Brown, Color::Default).into(),
+            Type::Socket => (Color::Green, Color::Default).into(),
+            Type::SymbolicLink => (Color::Magenta, Color::Default).into(),
         }
     }
 }
@@ -125,11 +126,17 @@ pub struct Attribute {
 }
 
 #[derive(Clone, Copy, Debug)]
-pub struct ColorPair(Color, Color);
+pub struct ColorPair {
+    foreground: Color,
+    background: Color,
+}
 
 impl From<(Color, Color)> for ColorPair {
-    fn from(value: (Color, Color)) -> Self {
-        Self(value.0, value.1)
+    fn from((foreground, background): (Color, Color)) -> Self {
+        Self {
+            foreground,
+            background,
+        }
     }
 }
 
@@ -162,7 +169,7 @@ impl From<(ColorPair, Type)> for Attribute {
 }
 
 impl Color {
-    pub const fn code(&self) -> &'static str {
+    pub fn code(&self) -> &'static str {
         match self {
             Color::Black => "a",
             Color::Blue => "e",
