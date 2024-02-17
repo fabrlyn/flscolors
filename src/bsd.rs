@@ -7,15 +7,43 @@ use nom::{
 };
 
 // TODO: Naming
-pub struct Colors([Attribute; 11]);
+pub struct Colors {
+    block_special: ColorPair,
+    character_special: ColorPair,
+    directory: ColorPair,
+    directory_with_sticky: ColorPair,
+    directory_without_sticky: ColorPair,
+    executable: ColorPair,
+    executable_set_gid: ColorPair,
+    executable_set_uid: ColorPair,
+    pipe: ColorPair,
+    socket: ColorPair,
+    symbolic_link: ColorPair,
+}
 
 impl Colors {
     pub fn to_string(&self) -> String {
-        self.0
+        self.as_sequence()
             .iter()
-            .flat_map(|c| [c.colors.foreground, c.colors.background])
+            .flat_map(|c| [c.foreground, c.background])
             .map(|c| c.code())
             .collect()
+    }
+
+    fn as_sequence(&self) -> [ColorPair; 11] {
+        [
+            self.directory,
+            self.symbolic_link,
+            self.socket,
+            self.pipe,
+            self.executable,
+            self.block_special,
+            self.character_special,
+            self.executable_set_uid,
+            self.executable_set_gid,
+            self.directory_with_sticky,
+            self.directory_without_sticky,
+        ]
     }
 }
 
@@ -233,4 +261,149 @@ pub struct Builder {
     executable_set_gid: ColorPair,
     directory_with_sticky: ColorPair,
     directory_without_sticky: ColorPair,
+}
+
+// TODO: Naming
+pub trait ColorsOrDefault: Sized {
+    fn colors(self, colors: ColorPair) -> ColorPair;
+}
+
+impl ColorsOrDefault for Color {
+    fn colors(self, colors: ColorPair) -> ColorPair {
+        (self, colors.background).into()
+    }
+}
+
+impl ColorsOrDefault for ColorPair {
+    fn colors(self, colors: ColorPair) -> ColorPair {
+        self
+    }
+}
+
+impl ColorsOrDefault for (Color, Color) {
+    fn colors(self, colors: ColorPair) -> ColorPair {
+        (self.0, self.1).into()
+    }
+}
+
+impl Builder {
+    pub fn directory<C>(mut self, colors: C) -> Builder
+    where
+        C: ColorsOrDefault,
+    {
+        self.directory = colors.colors(Type::Directory.default_colors());
+        self
+    }
+
+    pub fn block_special<C>(mut self, colors: C) -> Builder
+    where
+        C: ColorsOrDefault,
+    {
+        self.block_special = colors.colors(Type::Directory.default_colors());
+        self
+    }
+
+    pub fn character_special<C>(mut self, colors: C) -> Builder
+    where
+        C: ColorsOrDefault,
+    {
+        self.character_special = colors.colors(Type::Directory.default_colors());
+        self
+    }
+
+    pub fn directory_with_sticky<C>(mut self, colors: C) -> Builder
+    where
+        C: ColorsOrDefault,
+    {
+        self.directory_with_sticky = colors.colors(Type::Directory.default_colors());
+        self
+    }
+
+    pub fn directory_without_sticky<C>(mut self, colors: C) -> Builder
+    where
+        C: ColorsOrDefault,
+    {
+        self.directory_without_sticky = colors.colors(Type::Directory.default_colors());
+        self
+    }
+
+    pub fn executable<C>(mut self, colors: C) -> Builder
+    where
+        C: ColorsOrDefault,
+    {
+        self.executable = colors.colors(Type::Directory.default_colors());
+        self
+    }
+
+    pub fn executable_set_gid<C>(mut self, colors: C) -> Builder
+    where
+        C: ColorsOrDefault,
+    {
+        self.executable_set_gid = colors.colors(Type::Directory.default_colors());
+        self
+    }
+
+    pub fn executable_set_uid<C>(mut self, colors: C) -> Builder
+    where
+        C: ColorsOrDefault,
+    {
+        self.executable_set_uid = colors.colors(Type::Directory.default_colors());
+        self
+    }
+
+    pub fn pipe<C>(mut self, colors: C) -> Builder
+    where
+        C: ColorsOrDefault,
+    {
+        self.pipe = colors.colors(Type::Directory.default_colors());
+        self
+    }
+
+    pub fn socket<C>(mut self, colors: C) -> Builder
+    where
+        C: ColorsOrDefault,
+    {
+        self.socket = colors.colors(Type::Directory.default_colors());
+        self
+    }
+
+    pub fn symbolic_link<C>(mut self, colors: C) -> Builder
+    where
+        C: ColorsOrDefault,
+    {
+        self.symbolic_link = colors.colors(Type::Directory.default_colors());
+        self
+    }
+
+    pub fn build(self) -> Colors {
+        Colors([
+            self.directory,
+            self.symbolic_link,
+            self.socket,
+            self.pipe,
+            self.executable,
+            self.block_special,
+            self.character_special,
+            self.executable_set_uid,
+            self.executable_set_gid,
+            self.directory_with_sticky,
+            self.directory_without_sticky,
+        ])
+    }
+}
+
+pub fn builder() -> Builder {
+    Builder {
+        block_special: Type::BlockSpecial.default_colors(),
+        character_special: Type::CharacterSpecial.default_colors(),
+        directory: Type::Directory.default_colors(),
+        directory_with_sticky: Type::DirectoryWithSticky.default_colors(),
+        directory_without_sticky: Type::DirectoryWithoutSticky.default_colors(),
+        executable: Type::Executable.default_colors(),
+        executable_set_gid: Type::ExecutableSetGid.default_colors(),
+        executable_set_uid: Type::ExecutableSetUid.default_colors(),
+        pipe: Type::Pipe.default_colors(),
+        socket: Type::Socket.default_colors(),
+        symbolic_link: Type::SymbolicLink.default_colors(),
+    }
 }
