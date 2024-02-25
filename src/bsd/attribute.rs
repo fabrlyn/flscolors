@@ -16,23 +16,6 @@ pub enum Attribute {
 }
 
 impl Attribute {
-    pub fn from_position(position: u8) -> Option<Self> {
-        match position {
-            1 => Some(Attribute::Directory),
-            2 => Some(Attribute::SymbolicLink),
-            3 => Some(Attribute::Socket),
-            4 => Some(Attribute::Pipe),
-            5 => Some(Attribute::Executable),
-            6 => Some(Attribute::BlockSpecial),
-            7 => Some(Attribute::CharacterSpecial),
-            8 => Some(Attribute::ExecutableSetUid),
-            9 => Some(Attribute::ExecutableSetGid),
-            10 => Some(Attribute::DirectoryWithSticky),
-            11 => Some(Attribute::DirectoryWithoutSticky),
-            _ => None,
-        }
-    }
-
     pub fn default_color_pair(&self) -> ColorPair {
         match self {
             Self::Directory => (Color::Blue, Color::Default).into(),
