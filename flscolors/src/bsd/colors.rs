@@ -1,17 +1,18 @@
 use super::{attribute::Attribute, color::Color, color_pair::ColorPair};
 
+#[derive(Clone, Copy, Debug)]
 pub struct Colors {
-    block_special: ColorPair,
-    character_special: ColorPair,
-    directory: ColorPair,
-    directory_with_sticky: ColorPair,
-    directory_without_sticky: ColorPair,
-    executable: ColorPair,
-    executable_set_gid: ColorPair,
-    executable_set_uid: ColorPair,
-    pipe: ColorPair,
-    socket: ColorPair,
-    symbolic_link: ColorPair,
+    pub block_special: ColorPair,
+    pub character_special: ColorPair,
+    pub directory: ColorPair,
+    pub directory_with_sticky: ColorPair,
+    pub directory_without_sticky: ColorPair,
+    pub executable: ColorPair,
+    pub executable_set_gid: ColorPair,
+    pub executable_set_uid: ColorPair,
+    pub pipe: ColorPair,
+    pub socket: ColorPair,
+    pub symbolic_link: ColorPair,
 }
 
 impl Colors {

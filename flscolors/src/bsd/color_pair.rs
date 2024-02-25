@@ -15,7 +15,6 @@ impl ColorPair {
             ColorPair::from,
         )(input)
     }
-    
 }
 
 impl From<(Color, Color)> for ColorPair {
